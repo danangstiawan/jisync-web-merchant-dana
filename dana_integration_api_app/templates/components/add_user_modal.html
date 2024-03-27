@@ -1,0 +1,207 @@
+<script>
+    class AddUserModal{
+        dialog
+        state
+        onSuccess
+        constructor(){
+            this.dialog=new Dialog({
+                maxWidth:'sm'
+            })
+            this.onSuccess=null
+            this.elements={
+                email:null,
+                password:null,
+                phone:null,
+                fullName:null,
+                address:null,
+                gender:null,
+            }
+            this.state={
+                fullName:'',
+                email:'',
+                phone:'',
+                gender:'U',
+                address:'',
+                password:''
+            }
+        }
+        show(onSuccess){
+            this.onSuccess=onSuccess
+
+            
+            this.dialog.showDialog(
+                this.dialog.header('Tambah User',()=>this.dialog.closeDialog()),
+                this.dialog.content(`
+                    <form class='flex flex-col p-4 gap-2' id='form-add-user'>
+                        <div class='form-group '>
+                            <label  class='form-label' htmlFor="full-name-input">Full Name*</label>
+                            <input id='full-name-input' type="text" class='input' autofocus placeholder='enter your full name' required value="${this.state.fullName}" />
+                            <small class="form-message">
+               </small>
+                        </div>
+                        <div class='form-group '>
+                            <label  class='form-label'htmlFor="email-input">
+                                Email*
+                            </label>
+                            <input required id='email-input' type="email" class='input' value="${this.state.email}" placeholder='enter your full name' />
+                            <small class="form-message">
+                            </small>
+                        </div>
+                        <div class='form-group '>
+                            <label  class='form-label'htmlFor="phone-input">
+                                Phone Number*
+                            </label>
+                            <input required id='phone-input'  class='input' placeholder='enter your phone' type='tel' value="${this.state.phone}"/>
+                            <small class="form-message">
+                            </small>
+                        </div>
+                        
+                        <div class='form-group '>
+                             <label  class='form-label'htmlFor="gender-input">
+                                Gender*
+                            </label>
+                            <select  id="gender-input" class='input' >
+                                <option value="M">Male</option>
+                                <option  value="F">Female</option>
+                                <option selected value="U">Unknown</option>
+                            </select>
+                            <small class="form-message">
+                        </small>
+                        </div>
+                        <div class='form-group '>
+                             <label  class='form-label'htmlFor="password-input">
+                                Password*
+                            </label>
+                            <input required id='password-input' class='input' placeholder='enter password' autocomplete='new-password' type='password' value="${this.state.password}"/>
+                            <small class="form-message">
+                        </small>
+                        </div>
+                        <div class='form-group '>
+                            <label class='form-label' htmlFor="address-input">
+                                Address*
+                            </label>
+                            <textarea value="${this.state.address}" id='address-input' placeholder='enter your address'class='input' ></textarea
+                        </div>  
+                    </form>
+                `),
+                this.dialog.actions(`
+                <button id='add-button' class='button primary contained'>
+                    Add
+                </button>
+                `),
+            )
+            this.getElements()
+            this.listen()
+        }
+
+        getElements(){  
+            this.elements={
+                 email:$('#email-input'),
+                fullName:$('#full-name-input'),
+                phone:$('#phone-input'),
+                gender:$('#gender-input'),
+                password:$('#password-input'),
+                address:$('#address-input'),
+            }
+        }
+
+        setError(element,errMsg){
+            const parent=element.parent()
+            if(errMsg){
+                parent.addClass('error')
+                element.focus()
+                parent.children('.form-message').text(errMsg)
+                throw new Error('validation error')
+            }else{
+                parent.removeClass('error')
+                parent.children('.form-message').text('')
+            }
+        }
+
+        getFormVal(){
+            const email=this.elements.email.val()
+            if(!email){
+                this.setError(this.elements.email,'masukan email')
+            }else{
+                this.setError(this.elements.email,'')
+            }
+            const fullName=this.elements.fullName.val()
+            if(!fullName){
+                this.setError(this.elements.fullName,'masukan nama lengkap')
+            }else{
+                this.setError(this.elements.fullName,'')
+            }
+            const phone=this.elements.phone.val()
+            if(!phone){
+                this.setError(this.elements.phone,'masukan nomor telepon')
+            }else{
+                this.setError(this.elements.phone,'')
+            }
+            const gender=this.elements.gender.val()
+            if(!gender){
+                this.setError(this.elements.gender,'masukan gender')
+            }else{
+                this.setError(this.elements.gender,'')
+            }
+            const password=this.elements.password.val()
+            if(!password){
+                this.setError(this.elements.password,'masukan password')
+            }else{
+                this.setError(this.elements.password,'')
+            }
+            const address=this.elements.address.val()
+
+            return({
+                email,fullName,phone,gender,password,address
+            })
+        }
+
+        
+
+        listen(){
+            $('#add-button').click(()=>{
+                $(`#form-add-user`).submit()
+            })
+            $(`#form-add-user`).submit((ev)=>{
+                ev.preventDefault()
+                const val=this.getFormVal()
+                 this.handleAdd(val)
+                 
+            })
+            
+        }
+
+        handleAdd(data){
+            const self=this
+            $.ajax('/api/user',{
+                method:'POST',
+                dataType:'json',
+                data:{
+                    email:data.email,
+                    full_name:data.fullName,
+                    password:data.password,
+                    phone:data.phone,
+                    gender:data.gender,
+                    address:data.address,
+                },
+                 success: function(response) {
+                    // const resp=response
+                    showToast('user berhasil ditambahkan!',{variant:'success'})
+                    self.close()
+                    if(self.onSuccess){
+                        self.onSuccess()
+                    }
+                },
+                error: function(xhr, status, error) {
+                    const resp=xhr.responseJSON
+                    showToast(`user gagal ditambahkan! ${resp.msg}`,{variant:'danger'})
+                    
+                }
+            })
+        }
+
+        close(){
+            this.dialog.closeDialog()
+        }
+    }
+</script>

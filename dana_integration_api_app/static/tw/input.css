@@ -2,3 +2,109 @@
 @tailwind components;
 @tailwind utilities;
 @tailwind variants;
+
+@layer components {
+    h3 {
+        @apply text-3xl font-semibold;
+    }
+
+    table {
+        @apply text-sm;
+    }
+
+    table th {
+        @apply font-medium text-start;
+    }
+
+    table td,
+    table th {
+        @apply px-6 py-3 max-w-[30ch];
+    }
+
+    table tr {
+        @apply border-b border-solid border-neutral-200;
+    }
+
+    table > tbody tr:last-child {
+        @apply border-none;
+    }
+
+    .input {
+        @apply p-2 outline-none w-full border-[1px] rounded-md border-neutral-200 focus:border-blue-800;
+    }
+    .input::placeholder {
+        @apply text-gray-300;
+    }
+
+    .button {
+        @apply py-2 px-4 text-center rounded-md font-medium;
+    }
+    .icon-button {
+        @apply p-2 grid place-items-center;
+    }
+
+    .button.contained.primary {
+        @apply text-white hover:bg-blue-900 active:bg-blue-950 bg-blue-800;
+    }
+    .button.outlined.primary {
+        @apply text-blue-800 active:bg-blue-800/25 border-solid border-[2px] border-blue-800;
+    }
+    .button.text.primary {
+        @apply text-blue-800 active:bg-blue-800/25;
+    }
+    .button.contained.danger {
+        @apply text-white hover:bg-red-700 active:bg-red-800 bg-red-600;
+    }
+    .button.outlined.danger {
+        @apply text-red-600 active:bg-red-600/25 border-solid border-[2px] border-red-600;
+    }
+    .button.text.danger {
+        @apply text-red-600 active:bg-red-600/25;
+    }
+
+    .form-group {
+        @apply flex flex-col items-start w-full gap-1;
+    }
+    .form-label {
+        @apply font-medium;
+    }
+    .form-message {
+        @apply text-sm text-gray-400;
+    }
+    .form-group.error .input {
+        @apply border-red-500 text-red-500;
+    }
+    .form-group.error .form-message {
+        @apply text-red-500;
+    }
+    *::-webkit-scrollbar {
+        width: 0.5rem;
+    }
+    *::-webkit-scrollbar-thumb {
+        @apply bg-neutral-300 rounded-md;
+        cursor: grab;
+    }
+    *::-webkit-scrollbar-thumb:active {
+        cursor: grabbing;
+    }
+}
+
+body {
+    height: 100vh;
+    width: 100%;
+}
+
+.material-symbols-outlined,
+.material-icons-outlined {
+    /* width: 1em;
+    height: 1em; */
+    /* font-size: inherit; */
+    max-width: 2em;
+    max-height: 2em;
+    font-size: 1.25em;
+    /* height: fit-content; */
+    /* width: fit-content; */
+    overflow: hidden;
+    /* display: grid;
+    place-items: center; */
+}

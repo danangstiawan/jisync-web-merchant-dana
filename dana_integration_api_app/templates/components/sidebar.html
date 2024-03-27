@@ -1,0 +1,38 @@
+<div class="h-full py-8 px-6 shadow-sm bg-white ">
+    <h1 class="text-3xl text-blue-800 font-semibold mb-8">Jsync</h1>
+
+        <ul class=" flex flex-col gap-2 text-sm font-medium" id="sidebar">
+        </ul>
+</div>
+<script>
+
+    const menus=[
+        {
+            icon:'dashboard',
+            name:'Report',
+            path:'/home/'
+        },
+        {
+            icon:'manage_accounts',
+            name:'User Management',
+            path:'/home/users'
+        },
+    ]
+
+    $('#sidebar').append(
+        menus.map(menu=>{
+            const isCurrentPath=window.location.pathname===menu.path
+            const path=`
+        <li class=" transition-all rounded-md ${isCurrentPath?'bg-blue-800 text-white':'text-neutral-500'} " >
+            <a class='px-4 py-2 gap-2  items-center flex flex-row ' href="${menu.path}">
+                    <i class="material-symbols-outlined" >
+                    ${menu.icon}
+                    </i>
+                    <span>${menu.name}</span>
+            </a>
+        </li>
+        `
+        return path
+        })
+    )
+</script>

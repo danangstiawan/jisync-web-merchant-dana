@@ -1,0 +1,90 @@
+<div class="flex flex-col fixed top-0 right-0 z-20 " id="dialog-container">
+
+</div>
+<script>
+    
+
+
+    class Dialog{
+        container
+        id
+        config
+        
+        constructor(config){
+            this.container=$('#dialog-container')
+            if(Dialog.counter===undefined) Dialog.counter=0
+            Dialog.counter++
+            this.id=`DIALOG_${Dialog.counter}`
+            this.config=Object.assign({},config)
+
+        }
+        header(title,onClose){
+            
+            return {
+                html:`
+            <div id='${this.id}-header' class='p-4 border-b border-gray-200 w-full bg-white border-solid flex flex-row gap-4 items-center'>
+                <h4 class='text-xl font-medium flex-grow'>
+                    ${title}
+                </h4>
+                <button id='${this.id}-header-closebutton' class='button' >
+                    <i class='material-symbols-outlined text-gray-500'>
+                        close
+                    </i>
+                </button>
+            </div>
+            `,
+            applyListeners:()=>{
+                
+                $(`#${this.id}-header-closebutton`).click(()=>{
+                    // console.log('clikiki')
+                    onClose()
+                })
+            }
+            
+            }
+        }
+        content(content){
+            return `
+            <div id='${this.id}-content' class='flex flex-col'>
+                ${content}
+            </div>`
+        }
+        actions(actions){
+            return `
+            <div id='${this.id}-actions' class='flex flex-row justify-end gap-4 items-center p-4 border-t border-solid border-gray-200'>
+                ${actions}
+            </div>`
+        }
+        renderDialog(header,content,actions){
+
+            let maxWClass=''
+            const maxW=this.config.maxWidth
+
+            if(maxW==='sm')maxWClass='max-w-screen-sm'
+            else if(maxW==='md')maxWClass='max-w-screen-md'
+            else if(maxW==='lg')maxWClass='max-w-screen-lg'
+            else if(maxW==='xl')maxWClass='max-w-screen-xl'
+
+            this.container.append(`
+            <div id='${this.id}' class='fixed top-0 left-0 bg-black/10 grid place-items-center p-4 w-screen h-screen'>
+                <div class='bg-white rounded-md shadow-sm overflow-hidden flex flex-col items-stretch w-full ${maxWClass}'>
+                    ${header.html}
+                    ${content}
+                    ${actions}
+                </div>
+            </div>
+            `)
+
+           if(header) header.applyListeners()
+
+
+        }
+        showDialog(...components){
+            this.renderDialog(...components)
+        }
+        closeDialog(){
+            // console.log('clossee')
+            this.container.children(`#${this.id}`).remove()
+        }
+    }
+</script>

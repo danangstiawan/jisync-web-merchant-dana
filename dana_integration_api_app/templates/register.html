@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock title %} 
+{% block content %}
+<div class="relative w-screen h-screen bg-blue-800 grid place-items-center p-4">
+    
+     <div class='p-8 flex flex-col items-stretch rounded-md drop-shadow-lg bg-white w-full max-w-2xl gap-3 h-full'>
+        <div class='flex flex-col'>
+            <h5 class='text-blue-800 text-xl font-medium text-start'>Register</h5>
+            <span class='text-gray-500 text-sm text-start'>To get started, please fill in the form below.</span>
+        </div>
+       <form id="register-form" class="flex flex-col gap-4 h-full">
+           <div class='form-group' >
+               <span class='form-label'>Full Name*</span>
+               <input autofocus id="name" class='input' autocomplete="name" required type="text" placeholder="enter your full name"/> 
+               <small class="form-message">
+               </small>
+           </div>
+            <div class='form-group'>
+                <span class='form-label'>Email*</span>
+                <input id="email" autocomplete="email" class='input' required type="email" placeholder="enter your email"/> 
+                <small class="form-message"></small>
+            </div>
+            <div class='form-group'>
+                <span class='form-label'>Phone Number*</span>
+                <input id="phone" autocomplete="tel" class='input' required type="text" placeholder="enter your phone"/> 
+                <small class="form-message"></small>
+            </div>
+            <div class='form-group'>
+                <span class='form-label'>Password*</span>
+                <input id="password" autocomplete="new-password" class='input'required type="password" placeholder="enter your password"/> 
+                <small class="form-message"></small>
+            </div>
+            <div class='form-group'>
+                <span class='form-label'>Confirmation Password*</span>
+                <input id="confirmation-password" autocomplete="new-password" class='input'required type="password" placeholder="enter confirmation password"/> 
+                <small class="form-message"></small>
+            </div>
+            <div class="flex-grow"></div>
+            <button type="submit" class='button contained primary'>
+                Register
+            </button>
+       </form>
+    </div>
+</div>
+<script>
+    // console.log($)
+
+    $(document).ready(function(){
+        
+        const name=$('#name')
+        const phone=$('#phone')
+        const email=$('#email')
+        const password=$('#password')
+        const confirmationPassword=$('#confirmation-password')
+
+        $('#register-form').submit((ev)=>{
+            ev.preventDefault()
+            
+            
+            const passwordText=password.val()
+            if(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}/.test(passwordText)){
+                const parent=password.parent()
+                parent.removeClass('error')
+                parent.children('.form-message').text('')
+            }else{
+                const parent=password.parent()
+                parent.addClass('error')
+                parent.children('.form-message').text('Password must be >6 characters with an uppercase letter and a number')
+                return;
+            }
+
+            const phoneText=phone.val()
+
+            if(/\d+/.test(phoneText)){
+                const parent=phone.parent()
+                parent.removeClass('error')
+                parent.children('.form-message').text('')
+            }else{
+                const parent=phone.parent()
+                parent.addClass('error')
+                parent.children('.form-message').text('Invalid phone number!')
+                return;
+            }
+
+            const confirmationPasswordText=confirmationPassword.val()
+            if(passwordText!==confirmationPasswordText){
+                const parent=confirmationPassword.parent()
+                parent.addClass('error')
+                parent.children('.form-message').text('confirmation password and password is different')
+                return;
+            }else{
+                const parent=confirmationPassword.parent()
+                parent.removeClass('error')
+                parent.children('.form-message').text('')
+            }
+
+            const nameText=name.val()
+            const emailText=email.val()
+
+
+            $.ajax('/register',{
+                method:'POST',
+                dataType:'json',
+                data:{
+                    email:emailText,
+                    full_name:nameText,
+                    password:passwordText,
+                    phone:phoneText
+                },
+                 success: function(response) {
+                    // const resp=response
+                    showToast('Registrasi berhasil!',{variant:'success'})
+                    window.location.pathname='/login'
+                },
+                error: function(xhr, status, error) {
+                    const resp=xhr.responseJSON
+                    showToast(`Registrasi gagal! ${resp.msg}`,{variant:'danger'})
+                    
+                }
+            })
+
+        })
+    })
+</script>
+{% endblock content %}

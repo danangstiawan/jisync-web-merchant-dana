@@ -1,21 +1,42 @@
-from django.shortcuts import render, HttpResponse
-from .models import TodoItem
+from django.shortcuts import render
+from .controller.user_controller import User_Controller
 
-# Create your views here.
 
 
 def home(req):
-    # return HttpResponse('Hello World!')
+
     return render(
         req,
         "home.html",
     )
 
 
-def todos(req):
-    items = TodoItem.objects.all()
-    return render(req, "todos.html", {"todos": items})
-
-
 def login(req):
+    if req.method == "POST":
+        login_data = dict(req.POST.items())
+        resp = User_Controller.login(
+            req,
+            email=login_data["email"],
+            password=login_data["password"],
+        )
+
+        return resp
     return render(req, "login.html")
+
+
+def users(req):
+    # users = User_Controller.get_all_user()
+    # print(users)
+    return render(req, "users.html")
+
+
+def report(req):
+    return render(req, "report.html")
+
+
+def register(req):
+    if req.method == "POST":
+        user_data = dict(req.POST.items())
+        return User_Controller.register(user_data)
+
+    return render(req, "register.html")

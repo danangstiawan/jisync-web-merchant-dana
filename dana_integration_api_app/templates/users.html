@@ -1,0 +1,215 @@
+{% extends "base.html" %} 
+{% block title %}Home Page{% endblock title %} 
+{%block content %}
+<div class="w-full h-full flex flex-row relative bg-neutral-50 ">
+    {%include 'components/sidebar.html' %}
+    <div class='flex flex-col gap-4 p-4 flex-grow h-full '>
+        {%include 'components/navbar.html' %}
+        {%include 'components/add_user_modal.html' %}
+        <div class="flex-grow p-4 shadow-sm bg-white rounded-md flex overflow-clip flex-col gap-4 justify-stretch w-full">
+            <div class="flex flex-row justify-between items-center w-full ">
+                <h3 >
+                    Users
+                </h3>
+                <button id="add-user-button" class="button primary contained !w-fit flex items-center gap-2 !pl-2">
+                    <i class="material-symbols-outlined ">
+                        add_circle
+                    </i>
+                    Create
+                </button>
+            </div>
+            <input type="text" placeholder="Cari user" id="user-input-search" class="input">
+           <div class="rounded-md border border-neutral-200 border-solid w-full overflow-auto flex-grow h-full">
+             <table id='dataTable' class="w-full relative bg-white ">
+                <thead class="sticky top-0 bg-inherit ">
+                    <tr >
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Active</th>
+                        <th>Gender</th>
+                        <th>Address</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody >
+                   
+                </tbody>
+            </table>
+           </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+$(document).ready(function(){
+
+    class UserPage{
+        users
+        filteredData
+        search
+        modalAddUser
+        constructor(){
+            this.users=[]
+            this.search=''
+            this.filteredData=[]
+            this.init()
+            this.modalAddUser=new AddUserModal()
+            // this.dialog.showDialog(
+            //     this.dialog.header('Tambah User',()=>this.dialog.closeDialog()),
+            //     this.dialog.content('hi'),
+            //     this.dialog.actions('buttongs'),
+            // )
+        }
+
+        
+        onAddButtonClick(){
+            const self=this
+            this.modalAddUser.show(()=>{
+                console.log('on success')
+                self.getUsers()
+            })
+        }
+
+        renderCell(){
+            let dt=''
+            this.filteredData.forEach(item=>{
+                dt+=`<tr id="user_${item.id}" >` +
+                        "<td>" + item.full_name + "</td>" +
+                        "<td>" + item.email + "</td>" +
+                        "<td>" + item.phone + "</td>" +
+                        "<td>" + item.is_active + "</td>" +
+                        "<td>" + item.gender + "</td>" +
+                        "<td>" + item.address + "</td>" +
+                        `
+                        <td class="flex flex-col" >
+                            <button class="button text primary !p-1 text-sm">
+                                <i class='material-symbols-outlined'>
+                                    edit
+                                </i>
+                            </button>
+                            <button class="button text danger !p-1 text-sm">
+                                <i class='material-symbols-outlined'>
+                                    delete
+                                </i>
+                            </button
+                        </td>
+                        `+
+                    "</tr>"
+            })
+            $('#dataTable tbody').html(dt);
+        }
+
+        setState(fn){
+           if(fn) fn()
+            this.renderCell()
+        }
+
+        filterUser(){
+            this.filteredData=this.users.filter(v=>{
+                const arr=[]
+                arr.push(
+                    v.email,
+                    v.phone,
+                    v.full_name,
+                )
+                const str=arr.join('|')
+                return str.includes(this.search.toLocaleLowerCase())
+            })
+            this.setState()
+        }
+
+        getUsers(){
+            let self=this
+            $.ajax({
+                url: "/api/users",
+                type: "GET",
+                success(data) {
+                    // console.log(data);  // Access JSON data returned by the view
+                    self.setState(()=>{
+                        if(data.data?.length){
+                            self.users=data.data
+                        }else{
+                            self.users=[]
+                        }
+                        self.filterUser()
+                    })
+                },
+                error(err){
+                    console.log(err)
+                }
+            });
+        }
+
+        init(){
+            this.getUsers()
+            
+        }
+    }
+
+    const userPage=new UserPage()
+
+    $('#user-input-search').change((e)=>{
+        userPage.search=e.target.value
+        console.log("🚀 > $ > userPage.search:", userPage.search)
+        userPage.filterUser()
+    })
+
+    $('#add-user-button').click(()=>{
+        userPage.onAddButtonClick()
+    })
+
+
+
+    // function renderData( ){
+    //     let dt=''
+    //     userData.forEach(item=>{
+    //         dt+=`<tr id="user_${item.id}" >` +
+    //                 "<td>" + item.name + "</td>" +
+    //                 "<td>" + item.email + "</td>" +
+    //                 "<td>" + item.phone + "</td>" +
+    //                 "<td>" + item.is_active + "</td>" +
+    //                 "<td>" + item.gender + "</td>" +
+    //                 "<td>" + item.address + "</td>" +
+    //                 `
+    //                 <td class="flex flex-col" >
+    //                     <button class="button text primary !p-1 text-sm">
+    //                         <i class='material-symbols-outlined'>
+    //                             edit
+    //                         </i>
+    //                     </button>
+    //                     <button class="button text danger !p-1 text-sm">
+    //                         <i class='material-symbols-outlined'>
+    //                             delete
+    //                         </i>
+    //                     </button
+    //                 </td>
+    //                 `+
+    //             "</tr>"
+    //     })
+
+    //     $('#dataTable tbody').html(dt);
+    // }
+
+    // $.ajax({
+    //     url: "/api/users",
+    //     type: "GET",
+    //     success(data) {
+    //         // console.log(data);  // Access JSON data returned by the view
+    //         if(data.data?.length){
+                
+    //             userData=data
+    //         }else{
+    //             userData=[]
+    //         }
+    //     },
+    //     error(err){
+    //         console.log(err)
+    //     }
+    // });
+
+});
+</script>
+
+{% endblock content %}

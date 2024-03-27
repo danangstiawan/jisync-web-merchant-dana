@@ -1,0 +1,53 @@
+<div class="flex flex-col fixed top-0 right-0 z-30" id="toast-container">
+</div>
+<script>
+    function showToast(text,{variant}={}){
+        toastContainer=$('#toast-container');
+        // console.log(toastContainer.children().length)
+        if(toastContainer.children().length >= 5){
+           const elm= toastContainer.children(':first')
+           elm.off('click')
+           elm.remove()
+        }
+
+        let bg='bg-neutral-200'
+        let textClass='text-neutral-500'
+        
+        if(variant==='danger'){
+            bg='bg-red-200'
+            textClass='text-red-500'
+        }else if (variant==='success'){
+            bg='bg-green-200'
+            textClass='text-green-500'
+        }
+
+        const rand=Math.round(Math.random()*10000)
+
+        const toastId=`toast-${rand}`
+
+       toastContainer.append(`
+         <div id='${toastId}' class="flex flex-row p-2 mx-4 mt-4 bg-white rounded-md drop-shadow-md items-center gap-2 max-w-full " 
+            role="alert">
+                <div class="rounded-md p-1   grid ${bg} place-items-center">
+                    <i class="material-symbols-outlined ${textClass}">
+                        error
+                    </i>
+                </div>
+                <p class="text-sm text-neutral-500 flex-grow">
+                    ${text}
+                </p>
+                <button class="p-1 grid place-items-center text-base">
+                    <i class="text-neutral-500 material-symbols-outlined">
+                        close
+                    </i>
+                </button>
+            </div>
+       `)
+
+       const closeBtn=$(`#${toastId}`).children('button')
+       closeBtn.on('click',()=>{
+            $(closeBtn).off('click')
+            $(`#${toastId}`).remove()
+       })
+    }
+</script>

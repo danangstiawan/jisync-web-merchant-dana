@@ -1,29 +1,55 @@
 {% extends "base.html" %} 
 {% block title %}Login{% endblock title %} 
 {%block content %}
-<div class='relative w-screen h-screen bg-blue-600 grid place-items-center p-4'>
-    <div class='p-8 flex flex-col items-stretch rounded-md drop-shadow-lg bg-white w-full max-w-md gap-3'>
-        <h5 class='text-blue-600 text-lg font-medium text-center'>Welcome Back !</h5>
-        <span class='text-gray-500 text-sm text-center'>Sign in to continue!</span>
-        
-        <div class='flex flex-col items-start w-full gap-1'>
-            <span class='font-medium'> Username </span>
-            <input class='p-2 outline-none w-full border rounded-md border-neutral-200 focus:border-blue-500'/> 
+<div class='relative w-screen h-screen bg-blue-800 grid place-items-center p-4'>
+    <form id="login-form" class='p-8 flex flex-col items-stretch rounded-md drop-shadow-lg bg-white w-full max-w-md gap-3'>
+        <div class='flex flex-col'>
+            <h5 class='text-blue-600 text-xl font-medium text-center'>Welcome Back!</h5>
+            <span class='text-gray-500 text-sm text-center'>Sign in to continue</span>
         </div>
         <div class='flex flex-col items-start w-full gap-1'>
-            <span class='font-medium'> Password </span>
-            <input class='p-2 outline-none w-full border rounded-md border-neutral-200 focus:border-blue-500'/> 
+            <span class='font-medium'>Email</span>
+            <input id="email" required autofocus placeholder="enter email" class='input' type="email" autocomplete="email"/> 
         </div>
-        <div class='flex flex-row gap-2 items-center justify-start '>
-            <input type="checkbox"/>
-            <span>
-                Remember me?
-            </span>
+        <div class='flex flex-col items-start w-full gap-1'>
+            <span class='font-medium'>Password</span>
+            <input id="password" required placeholder="enter password" type="password" autocomplete="current-password" class='input'/> 
         </div>
-        <button class='p-2 text-center bg-blue-600 w-full rounded-md text-white '>Sign In</button>
-    </div>
+        <button type="submit" class='button primary contained'>
+            Sign In
+        </button>
+        <span>
+            Don't have an account? 
+            <a href="/register" tabindex="-1" class="text-blue-600 hover:text-blue-700 underline">Register</a>
+        </span>
+    </form>
 </div>
 <script type="text/javascript">
+    $(document).ready(function(){
+        const email=$('#email')
+        const password=$('#password')
+        $('#login-form').submit(ev=>{
+            ev.preventDefault()
+
+            $.ajax('/login',{
+                method:'POST',
+                dataType:'json',
+                data:{
+                    email:email.val(),
+                    password:password.val(),
+                },
+                 success: function(response) {
+                    window.location.pathname='/home'
+                },
+                error: function(xhr, status, error) {
+                    const resp=xhr.responseJSON
+                    // console.log("🚀 > $ > resp:", resp)
+                    showToast(`Registrasi gagal! ${resp.msg}`,{variant:'danger'})
+                    
+                }
+            })
+        })
+    })
     
 </script>
 {% endblock content %}

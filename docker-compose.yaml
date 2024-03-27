@@ -1,0 +1,31 @@
+version: "3"
+services:
+    mysql_dana:
+        image: mysql
+        restart: always
+        ports:
+            - 3306:3306
+        expose:
+            - 3306
+        environment:
+            MYSQL_ROOT_PASSWORD: Test123
+            MYSQL_DATABASE: danamerchant_db
+        volumes:
+            - mysql_dana_volume:/var/lib/mysql
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: python manage.py runserver 0.0.0.0:8000
+        restart: always
+        env_file:
+            - .env
+        ports:
+            - 8000:8000
+        volumes:
+          - .:/server:ro
+        depends_on:
+            - mysql_dana
+
+volumes:
+    mysql_dana_volume:

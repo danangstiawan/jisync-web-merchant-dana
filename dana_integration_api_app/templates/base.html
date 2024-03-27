@@ -4,9 +4,27 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{% block title %} {% endblock title %}</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
           {% include 'head/css.html' %}
+
     </head>
+
+    <script>
+        $.ajaxSetup({
+            
+            beforeSend: function(xhr, settings) {
+                if (!this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", Cookies.get('csrftoken'));
+                }
+            }
+        });
+    </script>
     <body>
-        {% block content %}{% endblock content %}
+        {% include "components/toast.html"%}
+        {% include "components/dialog.html"%}
+        {% block content %}
+        {% endblock content %}
     </body>
 </html>
