@@ -12,4 +12,9 @@ urlpatterns = [
         user_api.user,
         name="user",
     ),
+    path(
+        "user/<int:user_id>",
+        user_api.user_id,
+        name="user_id",
+    ),
 ]

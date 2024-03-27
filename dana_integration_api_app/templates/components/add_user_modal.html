@@ -3,10 +3,14 @@
         dialog
         state
         onSuccess
+        isEdit
+        userData
         constructor(){
+            this.isEdit=false
             this.dialog=new Dialog({
                 maxWidth:'sm'
             })
+            this.userData=null
             this.onSuccess=null
             this.elements={
                 email:null,
@@ -25,9 +29,32 @@
                 password:''
             }
         }
-        show(onSuccess){
+        show(onSuccess,{isEdit,userData}={}){
             this.onSuccess=onSuccess
-
+            if(isEdit){
+                this.isEdit=true
+                this.userData=userData
+                console.log("🚀 > AddUserModal > show > this.userData:", this.userData)
+                this.state={
+                    fullName:userData.full_name,
+                    email:userData.email,
+                    phone:userData.phone,
+                    gender:userData.gender,
+                    address:userData.address,
+                    password:''
+                }
+            } else {
+                this.isEdit=false
+                this.userData=null
+                this.state={
+                    fullName:'',
+                    email:'',
+                    phone:'',
+                    gender:'U',
+                    address:'',
+                    password:''
+                }
+            }
             
             this.dialog.showDialog(
                 this.dialog.header('Tambah User',()=>this.dialog.closeDialog()),
@@ -69,6 +96,15 @@
                         </small>
                         </div>
                         <div class='form-group '>
+                             <label  class='form-label'htmlFor="isadmin-input">
+                                Is Admin*
+                            </label>
+                            <input type='checkbox' id='isadmin-input'/>
+                            <small class="form-message">
+                        </small>
+                        </div>
+                        ${!this.isEdit?`
+                            <div class='form-group '>
                              <label  class='form-label'htmlFor="password-input">
                                 Password*
                             </label>
@@ -76,11 +112,13 @@
                             <small class="form-message">
                         </small>
                         </div>
+                            `:''}
                         <div class='form-group '>
                             <label class='form-label' htmlFor="address-input">
                                 Address*
                             </label>
-                            <textarea value="${this.state.address}" id='address-input' placeholder='enter your address'class='input' ></textarea
+                            <textarea value="${this.state.address}" id='address-input' placeholder='enter your address'class='input' 
+                            >${this.state.address}</textarea>
                         </div>  
                     </form>
                 `),
@@ -102,6 +140,7 @@
                 gender:$('#gender-input'),
                 password:$('#password-input'),
                 address:$('#address-input'),
+                isadmin:$('#isadmin-input'),
             }
         }
 
@@ -119,41 +158,41 @@
         }
 
         getFormVal(){
-            const email=this.elements.email.val()
-            if(!email){
+            const data={}
+            data.email=this.elements.email.val()
+            if(!data.email){
                 this.setError(this.elements.email,'masukan email')
             }else{
                 this.setError(this.elements.email,'')
             }
-            const fullName=this.elements.fullName.val()
-            if(!fullName){
+            data.fullName=this.elements.fullName.val()
+            if(!data.fullName){
                 this.setError(this.elements.fullName,'masukan nama lengkap')
             }else{
                 this.setError(this.elements.fullName,'')
             }
-            const phone=this.elements.phone.val()
-            if(!phone){
+            data.phone=this.elements.phone.val()
+            if(!data.phone){
                 this.setError(this.elements.phone,'masukan nomor telepon')
             }else{
                 this.setError(this.elements.phone,'')
             }
-            const gender=this.elements.gender.val()
-            if(!gender){
+            data.gender=this.elements.gender.val()
+            if(!data.gender){
                 this.setError(this.elements.gender,'masukan gender')
             }else{
                 this.setError(this.elements.gender,'')
             }
-            const password=this.elements.password.val()
-            if(!password){
+            data.password=this.elements.password.val()
+            if(!this.isEdit&&!data.password){
                 this.setError(this.elements.password,'masukan password')
             }else{
                 this.setError(this.elements.password,'')
             }
-            const address=this.elements.address.val()
+            data.address=this.elements.address.val()
+            data.isAdmin=this.elements.isadmin.attr('checked')
 
-            return({
-                email,fullName,phone,gender,password,address
-            })
+            return data
         }
 
         
@@ -165,12 +204,47 @@
             $(`#form-add-user`).submit((ev)=>{
                 ev.preventDefault()
                 const val=this.getFormVal()
-                 this.handleAdd(val)
-                 
+                if(this.isEdit){
+                    this.handleEdit(val)
+                }else{
+                    this.handleAdd(val)
+                }
             })
             
         }
 
+        handleEdit(data){
+            const self=this
+            const dt={
+                    email:data.email,
+                    full_name:data.fullName,
+                    phone:data.phone,
+                    gender:data.gender,
+                    address:data.address,
+                    is_admin:data.isAdmin
+            }
+            if(data.password){
+                dt.password=data.password
+            }
+            $.ajax('/api/user/'+self.userData.id,{
+                method:'POST',
+                dataType:'json',
+                data:dt,
+                 success: function(response) {
+                    // const resp=response
+                    showToast('user berhasil diubah!',{variant:'success'})
+                    self.close()
+                    if(self.onSuccess){
+                        self.onSuccess()
+                    }
+                },
+                error: function(xhr, status, error) {
+                    const resp=xhr.responseJSON
+                    showToast(`user gagal diubah! ${resp.msg}`,{variant:'danger'})
+                    
+                }
+            })
+        }
         handleAdd(data){
             const self=this
             $.ajax('/api/user',{
@@ -183,6 +257,7 @@
                     phone:data.phone,
                     gender:data.gender,
                     address:data.address,
+                    is_admin:data.isAdmin
                 },
                  success: function(response) {
                     // const resp=response

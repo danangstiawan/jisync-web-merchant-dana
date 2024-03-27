@@ -18,5 +18,8 @@ Including another URLconf
 from django.urls import path, include
 
 urlpatterns = [
+    # path("admin/", admin.site.urls),
+    # forward all matching request to dana_integration_api_app.urls
+    
     path("", include("dana_integration_api_app.urls")),
 ]

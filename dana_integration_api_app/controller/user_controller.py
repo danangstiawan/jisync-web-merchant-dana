@@ -72,11 +72,29 @@ class User_Controller:
             )
             new_user.save()
             # print(new_user)
-            return model_to_dict(new_user),None
+            return model_to_dict(new_user), None
 
         except Exception as err:
             print(err)
-            return None,err
+            return None, err
+
+    def update_user(user_id, **user_data):
+        try:
+            # print(user_data)
+            user = User.objects.get(id=user_id)
+            for key, value in user_data.items():
+                if hasattr(user, key):
+                    if key == "password":
+                        setattr(user, key, hash_password(value))
+                    else:
+                        setattr(user, key, (value))
+            user.save()
+            # print(new_user)
+            return model_to_dict(user), None
+
+        except Exception as err:
+            print(err)
+            return None, err
 
     def get_all_user():
 

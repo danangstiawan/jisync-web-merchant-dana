@@ -8,6 +8,12 @@ class AuthMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+
+        if request.path == "/":
+            if request.session.get("user_id"):
+                return redirect("/home")
+            else:
+                return redirect("/login")
         if request.path.startswith("/home/") and not request.session.get("user_id"):
             return redirect(
                 "/login"

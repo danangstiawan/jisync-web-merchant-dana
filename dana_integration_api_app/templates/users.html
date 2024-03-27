@@ -84,7 +84,7 @@ $(document).ready(function(){
                         "<td>" + item.address + "</td>" +
                         `
                         <td class="flex flex-col" >
-                            <button class="button text primary !p-1 text-sm">
+                            <button id='user_${item.id}_edit_button' class="button text primary !p-1 text-sm">
                                 <i class='material-symbols-outlined'>
                                     edit
                                 </i>
@@ -99,6 +99,18 @@ $(document).ready(function(){
                     "</tr>"
             })
             $('#dataTable tbody').html(dt);
+            const self=this
+            this.filteredData.forEach(item=>{
+                const editButton=$(`#user_${item.id}_edit_button`)
+                editButton.off('click')
+                editButton.click(()=>{
+                    
+                    self.modalAddUser.show(()=>{
+                        console.log('on success')
+                        self.getUsers()
+                    },{isEdit:true,userData:item})
+                })
+            })
         }
 
         setState(fn){
