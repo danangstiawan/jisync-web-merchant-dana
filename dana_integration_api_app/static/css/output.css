@@ -855,6 +855,14 @@ table > tbody tr:last-child {
   height: 100vh;
 }
 
+.h-auto {
+  height: auto;
+}
+
+.max-h-full {
+  max-height: 100%;
+}
+
 .\!w-fit {
   width: -moz-fit-content !important;
   width: fit-content !important;

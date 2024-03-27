@@ -31,7 +31,7 @@ def user_id(req, user_id):
             # json.loads(req.body.decode("utf-8"))
             print(new_user)
             obj = {}
-            
+
             cols = [
                 "full_name",
                 "email",
@@ -43,7 +43,10 @@ def user_id(req, user_id):
             ]
             for val in cols:
                 if new_user.get(val):
-                    obj[val] = new_user[val]
+                    if val == "is_admin":
+                        obj[val] = True if new_user[val] == "true" else False
+                    else:
+                        obj[val] = new_user[val]
             resp, err = User_Controller.update_user(user_id, **obj)
             if err != None:
                 return construct_response(
@@ -71,7 +74,7 @@ def user(req):
                 email=new_user["email"],
                 password=hash_password(new_user["password"]),
                 phone=new_user["phone"],
-                is_admin=new_user["is_admin"] or False,
+                is_admin=True if new_user["is_admin"] == "true" else False,
                 gender=new_user["gender"],
                 address=new_user["address"],
             )

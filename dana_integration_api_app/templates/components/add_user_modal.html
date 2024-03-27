@@ -190,8 +190,8 @@
                 this.setError(this.elements.password,'')
             }
             data.address=this.elements.address.val()
-            data.isAdmin=this.elements.isadmin.attr('checked')
-
+            data.isAdmin=this.elements.isadmin.prop('checked')
+            console.log(data)
             return data
         }
 
@@ -223,9 +223,11 @@
                     address:data.address,
                     is_admin:data.isAdmin
             }
+            console.log(dt)
             if(data.password){
                 dt.password=data.password
             }
+            
             $.ajax('/api/user/'+self.userData.id,{
                 method:'POST',
                 dataType:'json',

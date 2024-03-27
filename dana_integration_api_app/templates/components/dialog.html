@@ -1,4 +1,4 @@
-<div class="flex flex-col fixed top-0 right-0 z-20 " id="dialog-container">
+<div class="flex flex-col fixed top-0 right-0 z-20" id="dialog-container">
 
 </div>
 <script>
@@ -45,7 +45,7 @@
         }
         content(content){
             return `
-            <div id='${this.id}-content' class='flex flex-col'>
+            <div id='${this.id}-content' class='flex flex-col flex-grow overflow-auto'>
                 ${content}
             </div>`
         }
@@ -67,7 +67,7 @@
 
             this.container.append(`
             <div id='${this.id}' class='fixed top-0 left-0 bg-black/10 grid place-items-center p-4 w-screen h-screen'>
-                <div class='bg-white rounded-md shadow-sm overflow-hidden flex flex-col items-stretch w-full ${maxWClass}'>
+                <div class='bg-white rounded-md shadow-sm overflow-hidden flex flex-col items-stretch w-full max-h-full h-auto ${maxWClass}'>
                     ${header.html}
                     ${content}
                     ${actions}

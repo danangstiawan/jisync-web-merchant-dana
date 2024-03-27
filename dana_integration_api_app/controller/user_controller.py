@@ -47,7 +47,7 @@ class User_Controller:
                 email=user_data["email"],
                 password=hash_password(user_data["password"]),
                 phone=user_data["phone"],
-                is_admin=False,
+                is_admin=user_data["is_admin"],
                 gender="U",
                 created_by=0,
                 updated_by=0,
@@ -64,7 +64,7 @@ class User_Controller:
 
     def add_user(**user_data):
         try:
-            # print(user_data)
+            print(user_data)
             new_user = User(
                 **user_data,
                 created_by=0,
